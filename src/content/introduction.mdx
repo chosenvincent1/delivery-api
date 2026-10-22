@@ -1,45 +1,82 @@
 ---
 title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
+description: Learn what the Delivery API does, what to know before you use it, and where to start.
 mode: home
 ---
 
 <Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
-  primaryLabel="Get started"
-  primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
+  title="Delivery API"
+  subtitle="A mock REST API for managing deliveries, drivers, parcels, and hubs. Use it to practice API calls, test API tools, or learn how a delivery system fits together."
 />
 
-## Build the reader journey
-
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+## Start here
 
 <CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
+  <Card title="Make your first request" icon="party-horn" href="/quickstart">
+    Get a token, list deliveries, and filter the results in three steps.
   </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
+  <Card title="Find the right driver" icon="wrench" href="/guides/find-the-right-driver">
+    Match a pending delivery with an available driver.
   </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
+  <Card title="Authenticate your requests" icon="grid-round" href="/api/authentication">
+    Learn how the bearer token works and how to fix `401` errors.
   </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
+  <Card title="Browse the API reference" icon="code-simple" href="/api">
+    See every endpoint and try requests from your browser.
   </Card>
 </CardGroup>
 
-## Publish from one source
+## What you can do
 
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
+The Delivery API has 52 endpoints across eight groups: Auth, Deliveries,
+Drivers, Parcels, Hubs, Reports, Assignments, and Tracking. With it, you can:
 
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
+- List deliveries and filter them by status
+- Check which drivers are available and what vehicles they use
+- Look up parcels, hubs, and delivery tracking details
+- Assign drivers to deliveries
+
+## Base URL
+
+All requests use the same base URL:
+
+```text
+https://mock-delivery-api.onrender.com
+```
+
+Every request except login needs a bearer token. See
+[Authentication](/api/authentication) to get one.
+
+## Supported tools
+
+You can call the API from any HTTP client, such as `curl`, Postman, Insomnia,
+or your own code. The examples in these docs use `curl`.
+
+## Things to know before you start
+
+<Note type="info" title="This is a mock API">
+  The Delivery API is built for learning and testing, so it behaves differently
+  from a production API in a few ways.
 </Note>
+
+- **Data isn't saved.** Data lives in memory only. `POST`, `PATCH`, and
+  `DELETE` requests return `{"success": true}` but don't change any data.
+- **Some requests fail on purpose.** About 1 in 10 `GET` requests returns a
+  `500` error. If you get one, send the request again.
+- **Missing resources return an empty object.** If you request an ID that
+  doesn't exist, you get `{}` instead of a `404` error. Check that the
+  response isn't empty before you use it.
+- **Everyone uses the same test token.** The token is the same for all users,
+  so don't send real or private data.
+
+## Ready to start?
+
+Make your first request in a few minutes, or explore every endpoint in the
+API reference.
+
+<ActionButtons
+  primaryLabel="Get started"
+  primaryHref="/quickstart"
+  secondaryLabel="Browse the API"
+  secondaryHref="/api"
+/>

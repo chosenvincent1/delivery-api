@@ -1,47 +1,157 @@
 ---
 title: Quickstart
-description: Guide a new reader through one useful workflow and show them how to verify it.
+description: Get an access token, list deliveries, and filter the results in three steps.
 ---
 
-A strong quickstart produces one meaningful result. Replace the placeholders
-below with the shortest supported path for your product.
+In this guide, you'll get an access token, list deliveries, and filter the
+results.
 
 ## Before you begin
 
-List only the requirements needed for this workflow:
+All you need is a terminal with `curl` installed.
 
-- An account or credential, when required
-- A supported runtime, device, browser, or operating system
-- Permission to create or change the resource used in the example
+<Note type="info" title="The first request can be slow">
+  The first request after a break can take 30 seconds or more while the API
+  wakes up. Later requests respond right away.
+</Note>
 
-<Steps>
-  <Step title="Install the required tool">
-    Give readers one recommended installation command.
+## Step 1: Get your token
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Add the minimum configuration">
-    Include only the values needed for the first successful run.
+Send any username and password to the login endpoint:
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Complete the first task">
-    Use a realistic example that produces an observable result.
+```bash
+curl -X POST https://mock-delivery-api.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "demo", "password": "password123"}'
+```
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-  <Step title="Verify the result">
-    State exactly what the reader should see and how to recover when it does not appear.
-  </Step>
-</Steps>
+The API returns your token:
 
-## Choose the next task
+```json
+{
+  "token": "testtoken123",
+  "user": "mock-user"
+}
+```
 
-Link to the guide that naturally follows this result. Avoid ending the reader’s
-journey with a generic list of every feature.
+Every user gets the same token, so you can reuse `testtoken123` for every
+request in this guide.
+
+## Step 2: List deliveries
+
+Add the token to the `Authorization` header and request the first three
+deliveries:
+
+```bash
+curl "https://mock-delivery-api.onrender.com/deliveries?limit=3" \
+  -H "Authorization: Bearer testtoken123"
+```
+
+You get back a page of results:
+
+```json
+{
+  "page": 1,
+  "limit": 3,
+  "total": 50,
+  "results": [
+    {
+      "id": 1,
+      "status": "pending",
+      "address": "House 1, Street 10",
+      "customer": "Customer 1",
+      "city": "London",
+      "country": "UK",
+      "driverId": 1,
+      "date": "2025-12-01"
+    },
+    {
+      "id": 2,
+      "status": "in_transit",
+      "address": "House 2, Street 11",
+      "customer": "Customer 2",
+      "city": "New York",
+      "country": "USA",
+      "driverId": 2,
+      "date": "2025-12-02"
+    },
+    {
+      "id": 3,
+      "status": "delivered",
+      "address": "House 3, Street 12",
+      "customer": "Customer 3",
+      "city": "Paris",
+      "country": "France",
+      "driverId": 3,
+      "date": "2025-12-03"
+    }
+  ]
+}
+```
+
+`total` shows how many deliveries exist in all, and `results` holds the
+current page.
+
+## Step 3: Filter the results
+
+Add `status` to the query to see only deliveries in transit:
+
+```bash
+curl "https://mock-delivery-api.onrender.com/deliveries?status=in_transit&limit=2" \
+  -H "Authorization: Bearer testtoken123"
+```
+
+Now `results` holds only in-transit deliveries, and `total` drops to `17`:
+
+```json
+{
+  "page": 1,
+  "limit": 2,
+  "total": 17,
+  "results": [
+    {
+      "id": 2,
+      "status": "in_transit",
+      "address": "House 2, Street 11",
+      "customer": "Customer 2",
+      "city": "New York",
+      "country": "USA",
+      "driverId": 2,
+      "date": "2025-12-02"
+    },
+    {
+      "id": 5,
+      "status": "in_transit",
+      "address": "House 5, Street 14",
+      "customer": "Customer 5",
+      "city": "Tokyo",
+      "country": "Japan",
+      "driverId": 5,
+      "date": "2025-12-05"
+    }
+  ]
+}
+```
+
+You can combine filters the same way, for example
+`?status=delivered&city=Paris`.
+
+## If something goes wrong
+
+- **`401 Unauthorized`:** the token is missing or wrong. Check that the header
+  reads `Authorization: Bearer testtoken123`. See
+  [Authentication](/authentication) for more fixes.
+- **`500` error:** the API fails about 10% of `GET` requests on purpose. Run the
+  request again.
+
+## Next steps
+
+<CardGroup cols="2">
+  <Card title="Find the right driver" icon="wrench" href="/guides/find-the-right-driver">
+    Use deliveries, drivers, and assignments together to match a delivery
+    with an available driver.
+  </Card>
+  <Card title="Browse the API reference" icon="code-simple" href="/api">
+    See every endpoint, parameter, and response, and try requests live.
+  </Card>
+</CardGroup>
