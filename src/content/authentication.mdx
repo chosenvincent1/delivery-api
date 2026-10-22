@@ -1,0 +1,76 @@
+---
+title: Authentication
+description: Get a bearer token, add it to your requests, and fix 401 errors.
+---
+
+Every request except `POST /auth/login` needs a bearer token in the
+`Authorization` header:
+
+```bash
+Authorization: Bearer testtoken123
+```
+
+## How the token works
+
+The Delivery API uses a single shared token. Every user gets `testtoken123`,
+and it never expires, so you can use it right away without logging in.
+
+<Note type="info" title="Production APIs work differently">
+  Production APIs usually give each user a unique token that expires after a
+  set time. Keep real tokens out of your code and version control.
+</Note>
+
+## Get a token
+
+Send any username and password to the login endpoint:
+
+```bash
+curl -X POST https://mock-delivery-api.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "demo", "password": "password123"}'
+```
+
+The API returns the token and a user name:
+
+```json
+{
+  "token": "testtoken123",
+  "user": "mock-user"
+}
+```
+
+If you leave out the username or password, the API returns a `400` error:
+
+```json
+{
+  "error": "Missing username or password"
+}
+```
+
+## Use the token
+
+Add the token to the `Authorization` header of every request:
+
+```bash
+curl https://mock-delivery-api.onrender.com/drivers/1 \
+  -H "Authorization: Bearer testtoken123"
+```
+
+To test endpoints in the [API reference](/api), enter `testtoken123` in the
+authentication field on the endpoint's test panel.
+
+## Fix authentication errors
+
+If the token is missing or wrong, the API returns a `401` error:
+
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+The API checks the header exactly, so check these three things:
+
+- **The word `Bearer`:** it must start with a capital B.
+- **One space:** put exactly one space between `Bearer` and the token.
+- **The token:** it must be `testtoken123`, with no extra characters.

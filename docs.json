@@ -27,11 +27,7 @@
       "groups": [
         {
           "group": "Get started",
-          "pages": ["introduction", "quickstart"]
-        },
-        {
-          "group": "Design your docs",
-          "pages": ["components", "customization"]
+          "pages": ["introduction", "quickstart", "authentication"]
         }
       ]
     },
@@ -39,12 +35,8 @@
       "tab": "Guides",
       "groups": [
         {
-          "group": "Work with Thally",
-          "pages": [
-            "guides/create-a-site",
-            "guides/work-with-the-cli",
-            "guides/connect-ai-tools"
-          ]
+          "group": "Guides",
+          "pages": ["guides/find-the-right-driver"]
         }
       ]
     },
@@ -53,7 +45,7 @@
       "groups": [
         {
           "group": "Overview",
-          "pages": ["api/introduction", "api/authentication"]
+          "pages": ["api/introduction"]
         }
       ],
       "api": {

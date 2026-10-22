@@ -1,0 +1,166 @@
+---
+title: Find the right driver for a delivery
+description: Match a pending delivery with an available driver in the right location.
+---
+
+In this guide, you'll find a delivery that needs a driver, filter drivers by
+location and vehicle, check who's free, and assign the best match. You'll use
+four endpoints, all with the same token as the [Quickstart](/quickstart).
+
+## Step 1: Find a pending delivery
+
+List pending deliveries in Tokyo:
+
+```bash
+curl "https://mock-delivery-api.onrender.com/deliveries?status=pending&city=Tokyo&limit=1" \
+  -H "Authorization: Bearer testtoken123"
+```
+
+```json
+{
+  "page": 1,
+  "limit": 1,
+  "total": 3,
+  "results": [
+    {
+      "id": 10,
+      "status": "pending",
+      "address": "House 10, Street 19",
+      "customer": "Customer 10",
+      "city": "Tokyo",
+      "country": "Japan",
+      "driverId": 10,
+      "date": "2025-12-10"
+    }
+  ]
+}
+```
+
+Delivery `10` is pending in Tokyo, Japan. You'll find a driver for it.
+
+## Step 2: Find drivers in the same country
+
+Delivery `10` is a large order, so it needs a van. Filter drivers by country
+and vehicle:
+
+```bash
+curl "https://mock-delivery-api.onrender.com/drivers?country=Japan&vehicle=Van" \
+  -H "Authorization: Bearer testtoken123"
+```
+
+```json
+{
+  "page": 1,
+  "limit": 10,
+  "total": 3,
+  "results": [
+    {
+      "id": 15,
+      "name": "Driver 15",
+      "vehicle": "Van",
+      "state": "Tokyo Prefecture",
+      "country": "Japan",
+      "carModel": "Honda",
+      "availability": "available",
+      "experience": 15,
+      "rating": 4.2
+    },
+    {
+      "id": 30,
+      "name": "Driver 30",
+      "vehicle": "Van",
+      "state": "Tokyo Prefecture",
+      "country": "Japan",
+      "carModel": "Honda",
+      "availability": "busy",
+      "experience": 15,
+      "rating": 3.1
+    },
+    {
+      "id": 45,
+      "name": "Driver 45",
+      "vehicle": "Van",
+      "state": "Tokyo Prefecture",
+      "country": "Japan",
+      "carModel": "Honda",
+      "availability": "available",
+      "experience": 15,
+      "rating": 4.6
+    }
+  ]
+}
+```
+
+<Note type="info" title="Your ratings will differ">
+  Ratings are randomly generated each time the server restarts, so your
+  ratings won't match these.
+</Note>
+
+## Step 3: Pick the best available driver
+
+`GET /drivers` can't filter by availability, so check the `availability` field
+in the results. Two drivers are available: Driver 15 and Driver 45. Driver 45
+has the higher rating, so pick them.
+
+To list only available drivers, use `GET /drivers/availability/available`. It
+can't be combined with other filters like `country` or `vehicle`, though,
+which is why this guide filters first and checks availability after.
+
+## Step 4: Check the driver's current deliveries
+
+Before you assign a new delivery, check what Driver 45 is already handling:
+
+```bash
+curl https://mock-delivery-api.onrender.com/assignments/driver/45 \
+  -H "Authorization: Bearer testtoken123"
+```
+
+```json
+[
+  {
+    "id": 45,
+    "status": "delivered",
+    "address": "House 45, Street 54",
+    "customer": "Customer 45",
+    "city": "Tokyo",
+    "country": "Japan",
+    "driverId": 45,
+    "date": "2025-12-17"
+  }
+]
+```
+
+Driver 45's only delivery is already delivered, so they're free to take
+delivery `10`.
+
+## Step 5: Assign the driver
+
+Assign Driver 45 to delivery `10`:
+
+```bash
+curl -X POST https://mock-delivery-api.onrender.com/assignments/delivery/10/driver/45 \
+  -H "Authorization: Bearer testtoken123"
+```
+
+```json
+{
+  "success": true
+}
+```
+
+<Note type="info" title="The assignment isn't saved">
+  The API doesn't save changes, so the assignment won't show up if you check
+  Driver 45's deliveries again. See
+  [Things to know before you start](/#things-to-know-before-you-start).
+</Note>
+
+## If something goes wrong
+
+- **`results` is empty:** no deliveries or drivers match your filters. Check
+  the spelling and capitals, for example `Van`, not `van`.
+- **You get `{}`:** the ID doesn't exist. The API returns an empty object
+  instead of a `404` error.
+- **`401 Unauthorized`:** check your token. See
+  [Authentication](/authentication).
+- **`500` error:** the API fails about 10% of `GET` requests on purpose. Run
+  the request again.
