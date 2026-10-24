@@ -5,7 +5,7 @@ description: What this API reference covers and how to try requests from your br
 ---
 
 This reference documents all 52 endpoints of the Delivery API. Every endpoint
-page has a **Send** button that runs the real request from your browser, so
+page has a **Try it** button that sends a real request from your browser, so
 you can inspect live responses before writing any code.
 
 ## Base URL
@@ -23,9 +23,11 @@ See [Authentication](/authentication) for details.
 
 ## Try your first request
 
-1. Open any endpoint in the **Deliveries** group in the sidebar.
-2. Enter `testtoken123` in the authentication field.
-3. Press **Send**. The response panel shows the real response.
+1. Open **List deliveries** in the **Deliveries** group in the sidebar.
+2. Click **Try it**.
+3. Check that the **Authorization** field contains your token. If it's empty,
+   enter `testtoken123`.
+4. Click **Send**. The response appears under **Result**.
 
-If you get a `500` error, press **Send** again. The API fails about 10% of
+If you get a `500` error, click **Send** again. The API fails about 10% of
 `GET` requests on purpose.
